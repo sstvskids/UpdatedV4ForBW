@@ -255,7 +255,12 @@ local function EntityNearPosition(distance, checktab)
 	end
 end
 
-local knit = game:GetService("ReplicatedStorage").Packages.Knit
+run(function()
+	local knit = require(game:GetService("ReplicatedStorage").Modules.Knit.Client)
+	if not debug.getupvalue(knit.Start, 1) then
+		repeat task.wait() until debug.getupvalue(knit.Start, 1)
+	end
+end)
 local services = knit:WaitForChild('Services')
 local ToolService = services:WaitForChild('ToolService')
 local CombatService = services:WaitForChild("CombatService")
