@@ -255,19 +255,28 @@ local function EntityNearPosition(distance, checktab)
 	end
 end
 
+local bd = {}
+
 run(function()
-	local knit = require(game:GetService("ReplicatedStorage").Modules.Knit.Client)
-	if not debug.getupvalue(knit.Start, 1) then
-		repeat task.wait() until debug.getupvalue(knit.Start, 1)
+	local Knit = require(replicatedStorage.Modules.Knit.Client)
+	if not debug.getupvalue(Knit.Start, 1) then
+		repeat task.wait() until debug.getupvalue(Knit.Start, 1)
 	end
+
+	bd = setmetatable({
+		CombatService = Knit.GetService('CombatService'),
+		ToolService = Knit.GetService('ToolService')
+	}, {
+		__index = function(self, ind)
+			rawset(self, ind, ind:find('Service') and Knit.GetService(ind) or Knit.GetController(ind))
+			return rawget(self, ind)
+		end
+	})
 end)
-local services = knit:WaitForChild('Services')
-local ToolService = services:WaitForChild('ToolService')
-local CombatService = services:WaitForChild("CombatService")
 
 local store = {
-    AttackRemote = ToolService:WaitForChild("RF").AttackPlayerWithSword,
-    BlockRemote = ToolService:WaitForChild("RF").ToggleBlockSword,
+    AttackRemote = ToolService.AttackPlayerWithSword,
+    BlockRemote = ToolService.ToggleBlockSword,
     isBlocking = function()
         return lplr:GetAttribute("Blocking")
     end,
